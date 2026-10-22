@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ゆずとエイジの㊙予定">
+<meta name="theme-color" content="#d9f7ee">
+<meta name="robots" content="noindex,nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<title>ゆずとエイジの㊙予定</title>
+<style>
+:root{--mint:#3cc9a3;--mint2:#d9f7ee;--pink:#ff7aa8;--pink2:#ffe3ee;--ink:#2f3a45;--sub:#6b7a86;--line:#e3eef0}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:linear-gradient(180deg,#e6faf3 0%,#fff3f8 60%,#fff 100%) fixed;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;font-size:16px;line-height:1.5}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.hide{display:none!important}
+#lock{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center}
+#lock img{width:112px;height:112px;border-radius:26px;box-shadow:0 8px 24px #3cc9a344}
+#lock h1{margin:18px 0 4px;font-size:26px;letter-spacing:.03em}
+#lock p{color:var(--sub);margin:4px 0 20px;font-size:15px}
+#pw{width:100%;max-width:320px;font-size:22px;padding:14px 16px;border-radius:16px;border:2px solid var(--mint);text-align:center;letter-spacing:.12em;background:#fff;outline:none}
+#pw:focus{border-color:var(--pink)}
+#unlock{margin-top:14px;width:100%;max-width:320px;padding:14px;border-radius:16px;background:linear-gradient(90deg,var(--mint),#5fd8b6);color:#fff;font-weight:700;font-size:18px;box-shadow:0 6px 16px #3cc9a355}
+#lockMsg{min-height:24px;margin-top:12px;color:#e0568a;font-size:14px}
+header{position:sticky;top:0;z-index:20;background:rgba(239,252,247,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:calc(env(safe-area-inset-top) + 8px) 12px 8px;border-bottom:1px solid var(--line)}
+.hrow{display:flex;align-items:center;gap:6px}
+.logo{font-weight:800;font-size:18px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ib{flex:none;width:38px;height:38px;border-radius:12px;background:#fff;border:1px solid var(--line);font-size:18px;display:flex;align-items:center;justify-content:center}
+#stat{font-size:11px;color:var(--sub);margin-top:4px}
+main{max-width:640px;margin:0 auto;padding:12px 12px calc(40px + env(safe-area-inset-bottom))}
+.sec{background:#fff;border-radius:20px;padding:12px 14px;margin-bottom:14px;box-shadow:0 2px 10px #3cc9a31a;border:1px solid var(--line)}
+.sec h2{margin:0 0 8px;font-size:17px;display:flex;align-items:center;gap:6px}
+.sec h2 small{color:var(--sub);font-weight:600;font-size:13px}
+.today{border:2px solid var(--pink);background:linear-gradient(180deg,#fff,#fff6fa)}
+.tom{border:2px solid var(--mint)}
+.ev{display:flex;gap:10px;padding:10px 0;border-top:1px dashed var(--line);align-items:flex-start}
+.ev:first-of-type{border-top:0}
+.tm{flex:none;width:62px;text-align:center;font-weight:800;color:#e0568a;font-size:15px}
+.tm small{display:block;font-weight:600;color:var(--sub);font-size:11px}
+.tm.un{color:var(--sub);font-size:12px}
+.bd{flex:1;min-width:0}
+.tt{font-weight:800;font-size:16px;word-break:break-word}
+.mt{font-size:13px;color:var(--sub);margin-top:2px;display:flex;flex-wrap:wrap;gap:4px 10px}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:1px 8px;border-radius:10px;background:var(--pink2);color:#e0568a}
+.tag.w{background:#e3f0ff;color:#2d7fd6}
+.memo{font-size:13px;margin-top:4px;background:#f6faf9;border-radius:10px;padding:6px 8px;white-space:pre-wrap}
+.acts{flex:none;display:flex;flex-direction:column;gap:6px}
+.acts button{width:36px;height:32px;border-radius:10px;border:1px solid var(--line);background:#fff;font-size:15px}
+.ev.done .tt{text-decoration:line-through;color:var(--sub)}
+.ev.done{opacity:.6}
+.empty{color:var(--sub);font-size:14px;padding:4px 0}
+.dh{font-weight:800;font-size:14px;color:var(--mint);margin:10px 0 0;padding-top:6px;border-top:2px solid var(--mint2)}
+.dh:first-of-type{border-top:0;margin-top:0}
+details summary{cursor:pointer;font-weight:800;font-size:15px;list-style:none}
+.rbtn{display:block;width:100%;padding:12px;border-radius:16px;background:linear-gradient(90deg,#ff8fb8,#ffa9c8);color:#fff;font-weight:800;font-size:16px;margin-bottom:14px;box-shadow:0 4px 14px #ff7aa855}
+.foot{text-align:center;color:#9aa6ae;font-size:12px;margin-top:22px}
+.foot button{color:#e0568a;text-decoration:underline;font-size:12px;margin:0 6px}
+.toast{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#2f3a45e6;color:#fff;padding:10px 18px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div id="lock">
+  <img src="icon-512.png" alt="">
+  <h1>ゆずとエイジの㊙予定</h1>
+  <p>ゆずがまとめた、エイジの予定だよ📅🔒<br>パスワードを入れてね♡</p>
+  <input id="pw" type="text" inputmode="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="パスワード">
+  <button id="unlock">ひらく✨</button>
+  <div id="lockMsg"></div>
+</div>
+<div id="app" class="hide">
+  <header>
+    <div class="hrow">
+      <div class="logo">📅 ゆずとエイジの㊙予定</div>
+      <button class="ib" id="recv" aria-label="ゆずから受け取る">📥</button>
+    </div>
+    <div id="stat">--</div>
+  </header>
+  <main id="main"></main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const VER='1.0.0',NAME='ゆずとエイジの㊙予定';
+const LS={pw:'yt_pw',st:'yt_state'};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
+let ST=ld(LS.st,{});
+const saveST=()=>localStorage.setItem(LS.st,JSON.stringify(ST));
+let PW=null,DATA=null,LAST='',busy=false;
+const jst=(o=0)=>new Date(Date.now()+9*3600e3+o*864e5).toISOString().slice(0,10);
+const wd=d=>'日月火水木金土'[new Date(d+'T12:00:00Z').getUTCDay()];
+const md=d=>{const[,m,dd]=d.split('-');return `${+m}/${+dd}(${wd(d)})`};
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),1800)}
+const ub=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const norm=s=>(s||'').trim().toLowerCase().replace(/[\s\-ー－]/g,'');
+async function decrypt(x,pw){
+  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
+  const k=await crypto.subtle.deriveKey({name:'PBKDF2',hash:'SHA-256',salt:ub(x.salt),iterations:x.iter},base,{name:'AES-GCM',length:256},false,['decrypt']);
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:ub(x.iv),additionalData:new TextEncoder().encode(x.aad||'')},k,ub(x.ct));
+  return JSON.parse(new TextDecoder().decode(pt))}
+async function fetchEnc(){const r=await fetch('data/events.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(r.status);return r.json()}
+async function tryUnlock(pw,silent){
+  $('#lockMsg').textContent=silent?'':'ひらいてるよ…🔑';let x;
+  try{x=await fetchEnc()}catch(e){$('#lockMsg').textContent='データが読めなかったの…電波を確認してね📶';return false}
+  try{DATA=await decrypt(x,pw)}catch(e){$('#lockMsg').textContent=silent?'':'パスワードがちがうみたい…もう一回ためしてね🥺';if(silent)localStorage.removeItem(LS.pw);return false}
+  PW=pw;LAST=x.ct;localStorage.setItem(LS.pw,pw);
+  $('#lock').classList.add('hide');$('#app').classList.remove('hide');render();return true}
+async function refresh(manual){
+  if(!PW||busy)return;busy=true;
+  try{const x=await fetchEnc();if(x.ct!==LAST){DATA=await decrypt(x,PW);LAST=x.ct;render();toast('ゆずから予定が届いたよ💌')}else if(manual)toast('新しい予定はないよ✨')}
+  catch(e){if(manual)toast('いまは受け取れなかったの…📶')}finally{busy=false}}
+function evHTML(e,showDate){
+  const s=ST[e.id]||{},w=e.category==='仕事・会議';
+  const tm=e.start?`<div class="tm">${esc(e.start)}${e.end?`<small>〜${esc(e.end)}</small>`:''}</div>`:`<div class="tm un">時間<br>未定</div>`;
+  return `<div class="ev${s.done?' done':''}">${tm}<div class="bd"><div class="tt">${w?'💼 ':''}${esc(e.title)}</div>
+  <div class="mt">${showDate?`<span>📆 ${md(e.date)}</span>`:''}<span class="tag${w?' w':''}">${esc(e.category||'プライベート')}</span>${e.place?`<span>📍 ${esc(e.place)}</span>`:''}${e.reminder?`<span>🔔 ${esc(e.reminder)}</span>`:''}</div>
+  ${e.memo?`<div class="memo">📝 ${esc(e.memo)}</div>`:''}</div>
+  <div class="acts"><button data-done="${esc(e.id)}" aria-label="済み">${s.done?'↩️':'✅'}</button><button data-hide="${esc(e.id)}" aria-label="かくす">🙈</button></div></div>`}
+const byTime=(a,b)=>(a.date+(a.start||'99')).localeCompare(b.date+(b.start||'99'));
+function render(){
+  const T=jst(),M=jst(1),all=(DATA.events||[]).slice().sort(byTime);
+  const vis=all.filter(e=>!(ST[e.id]||{}).hide),hidden=all.filter(e=>(ST[e.id]||{}).hide);
+  const list=(arr,sd)=>arr.length?arr.map(e=>evHTML(e,sd)).join(''):'';
+  const td=vis.filter(e=>e.date===T),tm=vis.filter(e=>e.date===M),up=vis.filter(e=>e.date>M),past=vis.filter(e=>e.date<T);
+  let h=`<button class="rbtn" id="recv2">📥 ゆずから予定を受け取る</button>`;
+  h+=`<div class="sec today"><h2>🌸 今日の予定 <small>${md(T)}</small></h2>${list(td)||'<div class="empty">今日の予定はないよ。ゆっくりしてね☕</div>'}</div>`;
+  h+=`<div class="sec tom"><h2>🌙 明日の予定 <small>${md(M)}</small></h2>${list(tm)||'<div class="empty">明日の予定はまだないよ</div>'}</div>`;
+  h+=`<div class="sec"><h2>🗓️ これからの予定</h2>`;
+  if(up.length){let cur='';up.forEach(e=>{if(e.date!==cur){cur=e.date;h+=`<div class="dh">${md(e.date)}</div>`}h+=evHTML(e,false)})}else h+='<div class="empty">この先の予定はまだないよ</div>';
+  h+=`</div>`;
+  if(past.length)h+=`<details class="sec"><summary>📦 すぎた予定（${past.length}）</summary>${list(past.slice().reverse(),true)}</details>`;
+  if(hidden.length)h+=`<details class="sec"><summary>🙈 かくした予定（${hidden.length}）</summary>${list(hidden,true)}</details>`;
+  h+=`<div class="foot">${NAME} v${VER}<br>ゆずに「10月30日19時から飲み会」みたいに話しかけてね♡<br><button id="logout">ログアウト</button><button id="reset">✅🙈をリセット</button></div>`;
+  $('#main').innerHTML=h;
+  $('#stat').textContent=`v${VER} ・ 更新 ${String(DATA.updated||'').replace('T',' ').slice(0,16)} ・ 予定${all.length}件`;
+  $('#recv2').onclick=()=>refresh(true);
+  $('#logout').onclick=()=>{if(confirm('ログアウトする？（✅の記録は残るよ）')){localStorage.removeItem(LS.pw);location.reload()}};
+  $('#reset').onclick=()=>{if(confirm('✅済み・🙈かくすを全部もとにもどす？')){ST={};saveST();render()}}}
+document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
+  const id=t.dataset.done||t.dataset.hide;if(!id)return;const s=ST[id]=ST[id]||{};
+  if(t.dataset.done){s.done=s.done?0:1;toast(s.done?'おつかれさま✅':'もどしたよ')}else{s.hide=s.hide?0:1;toast(s.hide?'かくしたよ🙈':'もどしたよ')}
+  saveST();render()});
+$('#recv').onclick=()=>refresh(true);
+$('#unlock').onclick=()=>{const v=norm($('#pw').value);if(v)tryUnlock(v)};
+$('#pw').addEventListener('keydown',e=>{if(e.key==='Enter')$('#unlock').click()});
+setInterval(()=>refresh(false),120000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){refresh(false);if(DATA)render()}});
+{const p=localStorage.getItem(LS.pw);if(p)tryUnlock(p,true)}
+if('serviceWorker'in navigator){const hadC=!!navigator.serviceWorker.controller;let rl=0;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(hadC&&!rl){rl=1;location.reload()}});navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{r.update();document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')r.update().catch(()=>{})})}).catch(()=>{})}
+</script>
+</body>
+</html>
