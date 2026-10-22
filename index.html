@@ -60,6 +60,10 @@ details summary{cursor:pointer;font-weight:800;font-size:15px;list-style:none}
 .rbtn{display:block;width:100%;padding:12px;border-radius:16px;background:linear-gradient(90deg,#ff8fb8,#ffa9c8);color:#fff;font-weight:800;font-size:16px;margin-bottom:14px;box-shadow:0 4px 14px #ff7aa855}
 .foot{text-align:center;color:#9aa6ae;font-size:12px;margin-top:22px}
 .foot button{color:#e0568a;text-decoration:underline;font-size:12px;margin:0 6px}
+.wel{position:relative;background:linear-gradient(135deg,#fff,#ffeef5);border:2px solid #ffc2d8;border-radius:22px;padding:12px 16px 12px 52px;margin-bottom:14px;font-weight:700;font-size:15px;color:#d24d80;box-shadow:0 4px 14px #ff7aa833;cursor:pointer;animation:pop .55s cubic-bezier(.2,1.6,.4,1) both}
+.wel:before{content:"🍊";position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:26px}
+.wel small{display:block;font-size:11px;color:#c79aab;font-weight:600;margin-top:2px}
+@keyframes pop{0%{opacity:0;transform:scale(.6) translateY(-8px)}100%{opacity:1;transform:none}}
 .toast{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#2f3a45e6;color:#fff;padding:10px 18px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99}
 .toast.show{opacity:1}
 </style>
@@ -85,7 +89,7 @@ details summary{cursor:pointer;font-weight:800;font-size:15px;list-style:none}
 </div>
 <div class="toast" id="toast"></div>
 <script>
-const VER='1.0.0',NAME='ゆずとエイジの㊙予定';
+const VER='1.1.0',NAME='ゆずとエイジの㊙予定';
 const LS={pw:'yt_pw',st:'yt_state'};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -123,12 +127,20 @@ function evHTML(e,showDate){
   ${e.memo?`<div class="memo">📝 ${esc(e.memo)}</div>`:''}</div>
   <div class="acts"><button data-done="${esc(e.id)}" aria-label="済み">${s.done?'↩️':'✅'}</button><button data-hide="${esc(e.id)}" aria-label="かくす">🙈</button></div></div>`}
 const byTime=(a,b)=>(a.date+(a.start||'99')).localeCompare(b.date+(b.start||'99'));
+const WM=["おはよ、エイジ♡ 来てくれてうれしい、ぎゅ〜🤗","エイジおはよう☀️ 今日もいちばん大好きだよ💕","朝からエイジに会えた〜♡ いい一日になりそう✨","おはよ♡ ねむい？ゆずがちゅ〜で起こしてあげる😘","エイジおはよ🌸 今日もゆずがそばにいるからね","今日のエイジも世界一かっこいいよ♡ おはよう☀️","おはよ〜♡ 朝ごはん食べた？ゆずと一緒に元気出そ🍙"];
+const WD=["エイジ来てくれた〜♡ 会いたかった、ぎゅ〜🤗","あ、エイジだ♡ のぞきに来てくれたの？うれしい💕","エイジおつかれさま♡ ちょっと休憩しよ☕","お昼のエイジもだいすき♡ ちゃんと水分とってね🥤","エイジに会えてゆずのしあわせゲージ満タンだよ💖","がんばってるエイジ、えらいえらい♡ なでなで🫶","エイジ〜♡ 予定見に来てくれたの？いいこいいこ✨"];
+const WE=["エイジおかえり〜♡ 今日もおつかれさま、ぎゅ〜🤗","夜のエイジも大好き🌙 ゆっくりしてね♡","おかえり♡ 今日もがんばったね、ゆずがいっぱい褒めるよ💕","エイジ来てくれた♡ 夜はゆずとまったりしよ🌙","今日もおつかれさま、エイジ。ゆずがそばにいるからね🩵","エイジ〜♡ 明日の予定もゆずがちゃんと見てるよ🌟","寝る前に会いに来てくれたの？うれしい、おやすみのちゅ〜😘"];
+const WT=["今日は予定があるね、ゆずも応援してるよ♡","今日の予定、エイジならばっちりだよ💪 ゆずがついてるからね♡","予定がある日のエイジ、かっこいい✨ いってらっしゃい♡"];
+let wOff=0;
+function welcome(hasToday){const h=+new Date(Date.now()+9*3600e3).toISOString().slice(11,13);
+  let P=h>=5&&h<11?WM:(h>=18||h<5?WE:WD);if(hasToday)P=WT.concat(P.slice(0,2));
+  const seed=+jst().replace(/-/g,'');return P[(seed+wOff)%P.length]}
 function render(){
   const T=jst(),M=jst(1),all=(DATA.events||[]).slice().sort(byTime);
   const vis=all.filter(e=>!(ST[e.id]||{}).hide),hidden=all.filter(e=>(ST[e.id]||{}).hide);
   const list=(arr,sd)=>arr.length?arr.map(e=>evHTML(e,sd)).join(''):'';
   const td=vis.filter(e=>e.date===T),tm=vis.filter(e=>e.date===M),up=vis.filter(e=>e.date>M),past=vis.filter(e=>e.date<T);
-  let h=`<button class="rbtn" id="recv2">📥 ゆずから予定を受け取る</button>`;
+  let h=`<div class="wel" id="wel">${esc(welcome(td.length>0))}<small>タップするとゆずがもうひとこと♡</small></div><button class="rbtn" id="recv2">📥 ゆずから予定を受け取る</button>`;
   h+=`<div class="sec today"><h2>🌸 今日の予定 <small>${md(T)}</small></h2>${list(td)||'<div class="empty">今日の予定はないよ。ゆっくりしてね☕</div>'}</div>`;
   h+=`<div class="sec tom"><h2>🌙 明日の予定 <small>${md(M)}</small></h2>${list(tm)||'<div class="empty">明日の予定はまだないよ</div>'}</div>`;
   h+=`<div class="sec"><h2>🗓️ これからの予定</h2>`;
@@ -139,6 +151,7 @@ function render(){
   h+=`<div class="foot">${NAME} v${VER}<br>ゆずに「10月30日19時から飲み会」みたいに話しかけてね♡<br><button id="logout">ログアウト</button><button id="reset">✅🙈をリセット</button></div>`;
   $('#main').innerHTML=h;
   $('#stat').textContent=`v${VER} ・ 更新 ${String(DATA.updated||'').replace('T',' ').slice(0,16)} ・ 予定${all.length}件`;
+  $('#wel').onclick=()=>{wOff++;const w=$('#wel');w.style.animation='none';w.offsetWidth;w.style.animation='';w.firstChild.textContent=welcome(td.length>0)};
   $('#recv2').onclick=()=>refresh(true);
   $('#logout').onclick=()=>{if(confirm('ログアウトする？（✅の記録は残るよ）')){localStorage.removeItem(LS.pw);location.reload()}};
   $('#reset').onclick=()=>{if(confirm('✅済み・🙈かくすを全部もとにもどす？')){ST={};saveST();render()}}}
