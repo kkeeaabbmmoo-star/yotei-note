@@ -1,6 +1,6 @@
-const V='yotei-v1.4.2';
+const V='yotei-v1.4.3';
 const SHELL='yotei-shell-'+V;
-const ASSETS=['./','index.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png','grok-yuzu.js?v=gy3','yuka.js?v=yk1','nav.js?v=nv2','backup.js?v=bk3'];
+const ASSETS=['./','index.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png','grok-yuzu.js?v=gy3','yuka.js?v=yk1','nav.js?v=nv2','backup.js?v=bk4'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(SHELL).then(c=>c.addAll(ASSETS)))});
 // only delete this app's own old caches (never other notes' caches)
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('yotei-')&&k!==SHELL).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
