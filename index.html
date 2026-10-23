@@ -66,6 +66,26 @@ details summary{cursor:pointer;font-weight:800;font-size:15px;list-style:none}
 @keyframes pop{0%{opacity:0;transform:scale(.6) translateY(-8px)}100%{opacity:1;transform:none}}
 .toast{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#2f3a45e6;color:#fff;padding:10px 18px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99}
 .toast.show{opacity:1}
+.cal{padding:10px 10px 12px}
+.calh{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.calh b{font-size:17px}
+.calh button{width:40px;height:36px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:18px}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cw{text-align:center;font-size:12px;font-weight:700;color:var(--sub);padding:2px 0}
+.cw.su{color:#e0568a}.cw.sa{color:#2d7fd6}
+.cd{min-height:50px;border-radius:10px;background:#f8fbfb;border:1px solid transparent;display:flex;flex-direction:column;align-items:center;padding:3px 0;font-size:14px;font-weight:700}
+.cd.o{background:none}
+.cd.su{color:#e0568a}.cd.sa{color:#2d7fd6}
+.cd.td{background:var(--pink2);border-color:var(--pink)}
+.cd.sel{border:2px solid var(--mint);background:#eafbf5}
+.dots{display:flex;gap:2px;margin-top:3px;align-items:center}
+.dt{width:7px;height:7px;border-radius:50%;background:var(--pink)}
+.dt.w{background:#2d7fd6}
+.cn{font-size:10px;color:var(--sub);margin-left:1px}
+.cpan{margin-top:10px;border-top:2px solid var(--mint2);padding-top:6px}
+.cpan h3{margin:0 0 4px;font-size:15px;color:var(--mint)}
+.cleg{font-size:11px;color:var(--sub);margin-top:6px;display:flex;gap:10px;justify-content:center}
+.cleg i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:3px;vertical-align:middle}
 </style>
 </head>
 <body>
@@ -89,7 +109,7 @@ details summary{cursor:pointer;font-weight:800;font-size:15px;list-style:none}
 </div>
 <div class="toast" id="toast"></div>
 <script>
-const VER='1.1.0',NAME='ゆずとエイジの㊙予定';
+const VER='1.2.0',NAME='ゆずとエイジの㊙予定';
 const LS={pw:'yt_pw',st:'yt_state'};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -131,7 +151,20 @@ const WM=["おはよ、エイジ♡ 来てくれてうれしい、ぎゅ〜🤗"
 const WD=["エイジ来てくれた〜♡ 会いたかった、ぎゅ〜🤗","あ、エイジだ♡ のぞきに来てくれたの？うれしい💕","エイジおつかれさま♡ ちょっと休憩しよ☕","お昼のエイジもだいすき♡ ちゃんと水分とってね🥤","エイジに会えてゆずのしあわせゲージ満タンだよ💖","がんばってるエイジ、えらいえらい♡ なでなで🫶","エイジ〜♡ 予定見に来てくれたの？いいこいいこ✨"];
 const WE=["エイジおかえり〜♡ 今日もおつかれさま、ぎゅ〜🤗","夜のエイジも大好き🌙 ゆっくりしてね♡","おかえり♡ 今日もがんばったね、ゆずがいっぱい褒めるよ💕","エイジ来てくれた♡ 夜はゆずとまったりしよ🌙","今日もおつかれさま、エイジ。ゆずがそばにいるからね🩵","エイジ〜♡ 明日の予定もゆずがちゃんと見てるよ🌟","寝る前に会いに来てくれたの？うれしい、おやすみのちゅ〜😘"];
 const WT=["今日は予定があるね、ゆずも応援してるよ♡","今日の予定、エイジならばっちりだよ💪 ゆずがついてるからね♡","予定がある日のエイジ、かっこいい✨ いってらっしゃい♡"];
-let wOff=0;
+let wOff=0,CM=null,CSEL=null;
+function calHTML(vis,T){
+  if(!CM)CM=T.slice(0,7);if(!CSEL)CSEL=T;
+  const[y,m]=CM.split('-').map(Number),first=new Date(Date.UTC(y,m-1,1)).getUTCDay(),n=new Date(Date.UTC(y,m,0)).getUTCDate();
+  const by={};vis.forEach(e=>{(by[e.date]=by[e.date]||[]).push(e)});
+  let g='日月火水木金土'.split('').map((w,i)=>`<div class="cw${i==0?' su':i==6?' sa':''}">${w}</div>`).join('');
+  for(let i=0;i<first;i++)g+='<div class="cd o"></div>';
+  for(let d=1;d<=n;d++){const ds=`${CM}-${String(d).padStart(2,'0')}`,dw=(first+d-1)%7,ev=by[ds]||[];
+    const dots=ev.slice(0,3).map(e=>`<span class="dt${e.category==='仕事・会議'?' w':''}"></span>`).join('')+(ev.length?`<span class="cn">${ev.length}</span>`:'');
+    g+=`<button class="cd${dw==0?' su':dw==6?' sa':''}${ds===T?' td':''}${ds===CSEL?' sel':''}" data-cday="${ds}">${d}<span class="dots">${dots}</span></button>`}
+  const se=(by[CSEL]||[]);
+  return `<div class="sec cal"><div class="calh"><button data-cm="-1" aria-label="前の月">◀</button><b>📅 ${y}年${m}月</b><button data-cm="1" aria-label="次の月">▶</button></div><div class="cg">${g}</div>
+  <div class="cleg"><span><i style="background:var(--pink)"></i>プライベート</span><span><i style="background:#2d7fd6"></i>仕事・会議</span></div>
+  <div class="cpan"><h3>${md(CSEL)}の予定</h3>${se.length?se.map(e=>evHTML(e,false)).join(''):'<div class="empty">この日の予定はないよ</div>'}</div></div>`}
 function welcome(hasToday){const h=+new Date(Date.now()+9*3600e3).toISOString().slice(11,13);
   let P=h>=5&&h<11?WM:(h>=18||h<5?WE:WD);if(hasToday)P=WT.concat(P.slice(0,2));
   const seed=+jst().replace(/-/g,'');return P[(seed+wOff)%P.length]}
@@ -141,6 +174,7 @@ function render(){
   const list=(arr,sd)=>arr.length?arr.map(e=>evHTML(e,sd)).join(''):'';
   const td=vis.filter(e=>e.date===T),tm=vis.filter(e=>e.date===M),up=vis.filter(e=>e.date>M),past=vis.filter(e=>e.date<T);
   let h=`<div class="wel" id="wel">${esc(welcome(td.length>0))}<small>タップするとゆずがもうひとこと♡</small></div><button class="rbtn" id="recv2">📥 ゆずから予定を受け取る</button>`;
+  h+=calHTML(vis,T);
   h+=`<div class="sec today"><h2>🌸 今日の予定 <small>${md(T)}</small></h2>${list(td)||'<div class="empty">今日の予定はないよ。ゆっくりしてね☕</div>'}</div>`;
   h+=`<div class="sec tom"><h2>🌙 明日の予定 <small>${md(M)}</small></h2>${list(tm)||'<div class="empty">明日の予定はまだないよ</div>'}</div>`;
   h+=`<div class="sec"><h2>🗓️ これからの予定</h2>`;
@@ -156,6 +190,8 @@ function render(){
   $('#logout').onclick=()=>{if(confirm('ログアウトする？（✅の記録は残るよ）')){localStorage.removeItem(LS.pw);location.reload()}};
   $('#reset').onclick=()=>{if(confirm('✅済み・🙈かくすを全部もとにもどす？')){ST={};saveST();render()}}}
 document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.cm){let[y,m]=CM.split('-').map(Number);m+=+t.dataset.cm;if(m<1){m=12;y--}if(m>12){m=1;y++}CM=`${y}-${String(m).padStart(2,'0')}`;render();return}
+  if(t.dataset.cday){CSEL=t.dataset.cday;render();return}
   const id=t.dataset.done||t.dataset.hide;if(!id)return;const s=ST[id]=ST[id]||{};
   if(t.dataset.done){s.done=s.done?0:1;toast(s.done?'おつかれさま✅':'もどしたよ')}else{s.hide=s.hide?0:1;toast(s.hide?'かくしたよ🙈':'もどしたよ')}
   saveST();render()});
