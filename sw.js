@@ -1,4 +1,4 @@
-const V='yotei-v1.3.0';
+const V='yotei-v1.3.1';
 const SHELL='yotei-shell-'+V;
 const ASSETS=['./','index.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png','grok-yuzu.js?v=gy3','yuka.js?v=yk1'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(SHELL).then(c=>c.addAll(ASSETS)))});
