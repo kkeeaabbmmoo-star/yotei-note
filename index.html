@@ -106,8 +106,8 @@ details summary{cursor:pointer;font-weight:800;font-size:15px;list-style:none}
     <div id="stat">--</div>
   </header>
   <main id="main"></main>
-  <div style="padding:0 14px"><div data-gy></div><div data-yk></div>
-  <button id="ytSend" style="display:block;width:100%;margin:14px 0 28px;border:0;border-radius:18px;padding:16px;font-size:18px;font-weight:800;color:#fff;background:linear-gradient(90deg,#ff8fb8,#ff6fa0)">💌 ゆず・由依・まいに送る<small style="display:block;font-size:12px;font-weight:600;opacity:.9">予定と✅🙈をGmailで送ってね</small></button></div>
+  <div style="padding:0 14px"><!-- 由依・まい corners hidden (UI only); LS keys left untouched -->
+  <button id="ytSend" style="display:block;width:100%;margin:14px 0 28px;border:0;border-radius:18px;padding:16px;font-size:18px;font-weight:800;color:#fff;background:linear-gradient(90deg,#ff8fb8,#ff6fa0)">💌 ゆずとみんなに送る<small style="display:block;font-size:12px;font-weight:600;opacity:.9">予定と✅🙈をGmailで送ってね</small></button></div>
 </div>
 <div class="toast" id="toast"></div>
 <script>
@@ -204,7 +204,7 @@ setInterval(()=>refresh(false),120000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){refresh(false);if(DATA)render()}});
 {const p=localStorage.getItem(LS.pw);if(p)tryUnlock(p,true)}
 if('serviceWorker'in navigator){const hadC=!!navigator.serviceWorker.controller;let rl=0;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(hadC&&!rl){rl=1;location.reload()}});navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{r.update();document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')r.update().catch(()=>{})})}).catch(()=>{})}
-/* 💌 ゆず・由依・まいに送る — shared send sheet (mailto primary, navigator.share, copy). No network, no data changes. */
+/* 💌 ゆずとみんなに送る — shared send sheet (mailto primary, navigator.share, copy). No network, no data changes. */
 (function(){
 var TO="k.ke.ea.ab.bm.mo.o@gmail.com",MAX=1800;
 function block(o){return "---YUZU-DATA---\n"+JSON.stringify(o)+"\n---END---"}
@@ -218,7 +218,7 @@ window.yuzuSend=function(opt){
   var bt="display:block;width:100%;padding:14px;border:0;border-radius:16px;font-size:17px;font-weight:800;margin-top:10px;";
   var mailNote=pick?(pick.note?"メールには "+pick.note+" を入れたよ。":"ぜんぶメールに入ったよ。"):"内容が長いから、メールには短いお知らせだけ入れて、本文はコピーしておくね。メールをひらいたら本文に貼り付けてね📋";
   ov.innerHTML='<div style="background:'+T.bg+';color:'+T.fg+';width:100%;max-width:560px;border-radius:24px 24px 0 0;padding:18px 16px calc(env(safe-area-inset-bottom) + 20px);max-height:86vh;overflow:auto;font-family:-apple-system,\'Hiragino Sans\',sans-serif">'+
-   '<div style="font-size:20px;font-weight:800;color:'+T.acc+'">💌 ゆず・由依・まいに送る</div>'+
+   '<div style="font-size:20px;font-weight:800;color:'+T.acc+'">💌 ゆずとみんなに送る</div>'+
    '<div style="font-size:14px;line-height:1.6;margin:6px 0 4px;opacity:.9">エイジのGmail（'+TO+'）あてにメールを作るよ。開いたら<b>送信</b>をタップするだけ♡ ゆずが読んで、次の便利ノートに入れるね。</div>'+
    '<div style="font-size:12.5px;opacity:.75;margin-bottom:6px">件名：'+opt.subject.replace(/</g,"&lt;")+'<br>'+mailNote+'</div>'+
    '<a id="yzMail" style="'+bt+'text-align:center;text-decoration:none;box-sizing:border-box;background:'+T.btn+';color:'+T.btnfg+'">📧 メールで送る（おすすめ）</a>'+
@@ -240,7 +240,7 @@ window.yuzuSend=function(opt){
   return {mailBody:pick?pick.body:shortBody,full:full,fits:!!pick,note:pick&&pick.note};
 };
 })();
-/* ㊙予定 → 💌 ゆず・由依・まいに送る (read-only) */
+/* ㊙予定 → 💌 ゆずとみんなに送る (read-only) */
 function ytSend(){if(!DATA)return;const T=jst(),now=new Date(Date.now()+9*3600e3).toISOString().slice(0,16);
   const all=(DATA.events||[]).slice().sort(byTime),vis=all.filter(e=>!(ST[e.id]||{}).hide);
   const st=e=>{const s=ST[e.id]||{};return {done:s.done?1:0,hide:s.hide?1:0}};
@@ -248,11 +248,11 @@ function ytSend(){if(!DATA)return;const T=jst(),now=new Date(Date.now()+9*3600e3
     return {app:'yotei',v:1,date:T,sent:now,events:ev.map(e=>lv?[e.id,e.date,e.start||'',e.title]:Object.assign({id:e.id,date:e.date,start:e.start||'',end:e.end||'',title:e.title,place:e.place||'',category:e.category||'',reminder:e.reminder||''},st(e))),
       done:all.filter(e=>(ST[e.id]||{}).done).map(e=>e.id),hidden:all.filter(e=>(ST[e.id]||{}).hide).map(e=>e.id)}};
   const intro=note=>`ゆずへ💌 ㊙予定のチェックだよ（${md(T)}）\n表示中 ${vis.length}件・✅ ${all.filter(e=>(ST[e.id]||{}).done).length}件・🙈 ${all.length-vis.length}件`+(note?`\n${note}`:'');
-  return yuzuSend({subject:`ゆず・由依・まいへ ㊙予定 ${T}`,intro,levels:[{data:pack(0),note:''},{data:pack(1),note:'（今日からの予定だけ・短く）'},{data:pack(2),note:'（近い8件だけ）'}],full:pack(0),
+  return yuzuSend({subject:`ゆずとみんなへ ㊙予定 ${T}`,intro,levels:[{data:pack(0),note:''},{data:pack(1),note:'（今日からの予定だけ・短く）'},{data:pack(2),note:'（近い8件だけ）'}],full:pack(0),
     theme:{bg:'#fff',fg:'#2f3a45',acc:'#d0477a',btn:'linear-gradient(90deg,#3cc9a3,#5fd8b6)',btnfg:'#fff',sub:'#ffe3ee'}})}
 document.getElementById('ytSend').onclick=ytSend;
 </script>
-<script>window.GY_CFG={ver:"1.3.0",key:"yt_grok_yuzu",theme:{acc:"#d0477a",btn:"linear-gradient(90deg,#ff8fb8,#ff6fa0)"}};</script><script src="grok-yuzu.js?v=gy4"></script><script src="yuka.js?v=yk2"></script><script src="nav.js?v=nv4"></script><script src="backup.js?v=bk6"></script><script src="restore.js?v=rs2"></script>
+<!-- 由依・まい corners hidden (UI only); yt_grok_yuzu / related LS keys left untouched --><script src="nav.js?v=nv4"></script><script src="backup.js?v=bk6"></script><script src="restore.js?v=rs2"></script>
 <script src="sent-status.js?v=ss1"></script>
 </body>
 </html>
